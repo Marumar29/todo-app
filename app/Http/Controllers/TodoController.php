@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Todo;
 use Illuminate\Http\Request;
+use App\Models\Todo;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller; 
-
 
 class TodoController extends Controller
 {
     public function index()
     {
-        $todos = Auth::user()->todos;
+        $todos = Todo::where('user_id', Auth::id())->get();
         return view('todos.index', compact('todos'));
     }
 
@@ -24,34 +22,61 @@ class TodoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:500', // Optional description
         ]);
 
-        Auth::user()->todos()->create($request->all());
+        Todo::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'user_id' => Auth::id(),
+        ]);
 
-        return redirect()->route('todos.index')->with('success', 'Todo Created!');
+        return redirect()->route('todos.index');
     }
 
     public function edit(Todo $todo)
     {
+        // Only allow editing if the todo belongs to the current user
+        if ($todo->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         return view('todos.edit', compact('todo'));
     }
 
     public function update(Request $request, Todo $todo)
     {
+        // Validate the input
         $request->validate([
-            'title' => 'required',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:500',
         ]);
 
-        $todo->update($request->all());
+        // Ensure the todo belongs to the current user
+        if ($todo->user_id !== Auth::id()) {
+            abort(403);
+        }
 
-        return redirect()->route('todos.index')->with('success', 'Todo Updated!');
+        // Update the todo
+        $todo->update([
+            'title' => $request->title,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('todos.index');
     }
 
     public function destroy(Todo $todo)
     {
+        // Ensure the todo belongs to the current user
+        if ($todo->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Delete the todo
         $todo->delete();
-        return redirect()->route('todos.index')->with('success', 'Todo Deleted!');
+
+        return redirect()->route('todos.index');
     }
 }
-

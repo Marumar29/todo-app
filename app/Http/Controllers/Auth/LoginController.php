@@ -2,32 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;  // Import Request class
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/todos';  // or wherever your To-Do page is
-
 
     /**
      * Create a new controller instance.
@@ -43,17 +26,18 @@ class LoginController extends Controller
     public function login(LoginRequest $request)
     {
         $credentials = $request->validated();
-    
+        
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('home');
+            return redirect()->intended(route('profile.edit')); // Directly redirect to profile page
         }
-    
+        
         return back()->withErrors(['email' => 'Invalid credentials.']);
     }
     
+    // This method is called after a successful login
     protected function authenticated(Request $request, $user)
     {
-        return redirect()->route('todos.index');  // Adjust the route as necessary
+        // Redirect to the profile edit page after login
+        return redirect()->route('profile.edit');
     }
-    
 }
