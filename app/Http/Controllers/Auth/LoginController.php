@@ -3,66 +3,77 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User; 
+
 
 class LoginController extends Controller
 {
     public function __construct()
     {
-        // Ensure that only guests can access login-related actions
         $this->middleware('guest')->except('logout');
-        // Ensure that authenticated users can only log out
-        $this->middleware('auth')->only('logout');
     }
 
-    public function login(LoginRequest $request)
+    public function showLoginForm()
     {
-        $credentials = $request->validated();
-
+        return view('auth.login');  // Make sure this view exists: resources/views/auth/login.blade.php
+    }
+    
+    public function login(Request $request)
+    {
+        // Validate login credentials
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+        ]);
+    
         // Find the user by email
-        $user = User::where('email', $credentials['email'])->first();
-
+        $user = User::where('email', $request->email)->first();
+    
         if ($user) {
-            // Combine the password with the stored salt
-            $saltedPassword = $credentials['password'] . $user->salt;
-
-            // Check if the password is valid
-            if (Hash::check($saltedPassword, $user->password)) {
-                // Check if MFA is enabled for the user
-                if ($user->mfa_enabled) {
-                    // Redirect to MFA verification page
-                    session(['mfa' => true, 'user_id' => $user->id]);
-                    return redirect()->route('mfa.verify');
-                }
-
-                // Log the user in and redirect to the intended route
-                auth()->login($user);
-                return redirect()->intended(route('profile.edit'));
+            // Concatenate the entered password with the stored salt
+            $hashedPassword = Hash::make($request->password . $user->salt); 
+    
+            // Log the raw password and the hashed password for debugging
+            Log::info('Attempting login:', [
+                'entered_password' => $request->password,
+                'salt' => $user->salt,
+                'hashed_password' => $hashedPassword,
+                'stored_password' => $user->password
+            ]);
+    
+            // Check if the entered password hash matches the stored hash
+            if (Hash::check($hashedPassword, $user->password)) {
+                // Successful login
+                Auth::login($user);
+                $request->session()->regenerate();
+                return redirect()->intended('/dashboard'); // Redirect after successful login
             }
         }
-
-        // If credentials are incorrect, show error
-        return back()->withErrors(['email' => 'Invalid credentials.']);
+    
+        // If login fails
+        return back()->withErrors([
+            'email' => 'Invalid credentials.',
+        ])->onlyInput('email');
     }
-
-    // This method is called after a successful login (if MFA is not enabled)
-    protected function authenticated(Request $request, $user)
-    {
-        return redirect()->route('profile.edit');
-    }
+    
+    
+    
+    
+    
 
     public function logout(Request $request)
     {
-        // Logout the user, invalidate the session, and regenerate the CSRF token
-        auth()->logout();
+        // Log the user out
+        Auth::logout();
+
+        // Invalidate the session and regenerate the token for security
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect to home
-        return redirect('/');
+        return redirect('/login');  // Redirect to login after logout
     }
 }

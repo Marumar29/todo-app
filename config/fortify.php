@@ -147,7 +147,10 @@ return [
     'features' => [
         Features::registration(),
         Features::emailVerification(),
-        Features::twoFactorAuthentication(),
+        Features::twoFactorAuthentication([
+            'confirm' => true,
+            'confirmPassword' => true,
+        ]),
     ],
 
     'create_users_using' => App\Actions\Fortify\CreateNewUser::class, // Bind your custom user creation action
