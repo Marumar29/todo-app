@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('city', 255)->nullable();
         });
     }
-    
+
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -28,5 +28,4 @@ return new class extends Migration
             $table->dropColumn('city');
         });
     }
-    
 };

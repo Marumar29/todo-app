@@ -39,6 +39,22 @@
                             </div>
                         </div>
 
+                        @if (session('mfa'))
+                            <div class="row mb-3">
+                                <label for="mfa_code" class="col-md-4 col-form-label text-md-end">{{ __('Enter MFA Code') }}</label>
+
+                                <div class="col-md-6">
+                                    <input id="mfa_code" type="text" class="form-control @error('mfa_code') is-invalid @enderror" name="mfa_code" required>
+
+                                    @error('mfa_code')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="row mb-3">
                             <div class="col-md-6 offset-md-4">
                                 <div class="form-check">

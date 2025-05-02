@@ -91,6 +91,35 @@
                         </div>
                     </form>
                     <!-- End of Registration Form -->
+
+                    <!-- MFA Step (this will show after the user successfully registers) -->
+                    @if(session('status') == 'verification-sent')
+                        <form method="POST" action="{{ route('verify.mfa') }}">
+                            @csrf
+                            <div class="row mb-3">
+                                <label for="mfa_code" class="col-md-4 col-form-label text-md-end">{{ __('Verification Code') }}</label>
+
+                                <div class="col-md-6">
+                                    <input id="mfa_code" type="text" class="form-control @error('mfa_code') is-invalid @enderror" name="mfa_code" value="{{ old('mfa_code') }}" required autofocus>
+
+                                    @error('mfa_code')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-6 offset-md-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        {{ __('Verify MFA') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    @endif
+
                 </div>
             </div>
         </div>

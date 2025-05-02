@@ -12,8 +12,8 @@ Route::get('/', function () {
     return view('welcome'); // Or redirect('/login') if you want to show login first
 });
 
-// Authentication routes
-Auth::routes();  // All authentication routes (login, register, reset password, etc.)
+// Authentication routes (Fortify automatically handles routes, so no need to manually define them here)
+// Auth::routes();  // REMOVE this line if you're using Fortify
 
 // Protected routes for authenticated users
 Route::middleware(['auth'])->group(function () {
@@ -30,3 +30,5 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/home', function () {
     return redirect('/profile'); // Redirect to profile page after login or registration
 })->name('home');
+
+Route::post('/two-factor-verify', [TwoFactorController::class, 'verify'])->name('two-factor.verify');
