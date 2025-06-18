@@ -31,3 +31,11 @@ Route::middleware([
 
 Route::post('/custom-register', [CustomRegisterController::class, 'register']);
 Route::post('/custom-login', [CustomLoginController::class, 'login']);
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin-dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+});
+
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/todo', [ToDoController::class, 'index'])->name('todo.index');
+});

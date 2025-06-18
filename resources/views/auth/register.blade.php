@@ -6,7 +6,7 @@
 
         <x-validation-errors class="mb-4" />
 
-        <form method="POST" action="{{ route('/custom-register') }}">
+        <form method="POST" action="{{ route('register') }}">
             @csrf
 
             <div>

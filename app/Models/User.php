@@ -69,4 +69,11 @@ class User extends Authenticatable
         Mail::to($this->email)->send(new TwoFactorCodeMail($this->two_factor_code));
     }
 
+    public function role()
+    {
+        return $this->hasOne(UserRole::class);
+    }
+
+
+
 }
