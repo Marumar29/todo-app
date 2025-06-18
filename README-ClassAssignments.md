@@ -111,15 +111,6 @@ We created two new database tables:
 
 ##  Migration Files
 
-## `create_user_roles_table.php`
-```php
-Schema::create('user_roles', function (Blueprint $table) {
-    $table->id();
-    $table->unsignedBigInteger('user_id');
-    $table->string('role_name'); // e.g. 'admin', 'user'
-    $table->text('description')->nullable();
-    $table->timestamps();
-});
 
 ---
 
