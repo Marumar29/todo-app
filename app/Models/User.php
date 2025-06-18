@@ -58,4 +58,15 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function generateTwoFactorCode()
+    {
+        $this->two_factor_code = rand(100000, 999999);
+        $this->two_factor_expires_at = now()->addMinutes(10);
+        $this->save();
+
+        // Here you would email the code
+        Mail::to($this->email)->send(new TwoFactorCodeMail($this->two_factor_code));
+    }
+
 }
