@@ -85,3 +85,38 @@ Input validation will be enforced using Laravel Form Request in Part 2.
 ## Validation
 - All sensitive operations (login, password) validated with secure Laravel methods.
 - Salt handled safely during registration and login.
+
+# Part 4 (Authorization) – Role-Based Access Control (RBAC)
+
+## ✅ Overview
+
+In this part of the To-Do App, we have implemented an authorization layer using **Role-Based Access Control (RBAC)** to differentiate between **Admin** and **User** roles. Only authenticated users can access the To-Do page, and access is granted based on their assigned roles and permissions.
+
+---
+
+## 🧩 Features Implemented
+
+## 1. Authentication Layer
+- Users must be authenticated via the login page before accessing the application.
+- After login, users are redirected based on their roles:
+  - **Admin** → `/admin-dashboard`
+  - **User** → `/todo`
+
+## 2. Role-Based Access
+We created two new database tables:
+- `user_roles` → links users to roles
+- `role_permissions` → defines the actions (CRUD) each role can perform
+
+---
+
+## 📂 Migration Files
+
+## `create_user_roles_table.php`
+```php
+Schema::create('user_roles', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('user_id');
+    $table->string('role_name'); // e.g. 'admin', 'user'
+    $table->text('description')->nullable();
+    $table->timestamps();
+});
