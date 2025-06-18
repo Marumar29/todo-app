@@ -88,13 +88,13 @@ Input validation will be enforced using Laravel Form Request in Part 2.
 
 # Part 4 (Authorization) – Role-Based Access Control (RBAC)
 
-## ✅ Overview
+## Overview
 
 In this part of the To-Do App, we have implemented an authorization layer using **Role-Based Access Control (RBAC)** to differentiate between **Admin** and **User** roles. Only authenticated users can access the To-Do page, and access is granted based on their assigned roles and permissions.
 
 ---
 
-## 🧩 Features Implemented
+## Features Implemented
 
 ## 1. Authentication Layer
 - Users must be authenticated via the login page before accessing the application.
@@ -109,7 +109,7 @@ We created two new database tables:
 
 ---
 
-## 📂 Migration Files
+##  Migration Files
 
 ## `create_user_roles_table.php`
 ```php
@@ -120,3 +120,32 @@ Schema::create('user_roles', function (Blueprint $table) {
     $table->text('description')->nullable();
     $table->timestamps();
 });
+
+---
+
+# Part 5 – XSS, CSRF, and CSP Prevention
+
+##  Overview
+
+In Part 5, security enhancements were implemented in the To-Do App to defend against three common web vulnerabilities:
+
+- **Cross-Site Scripting (XSS)**
+- **Cross-Site Request Forgery (CSRF)**
+- **Content Security Policy (CSP)**
+
+These implementations ensure that the application follows secure coding practices and complies with browser-enforced security measures.
+
+---
+
+## 1. Cross-Site Scripting (XSS) Protection
+
+##  What Was Done
+
+- For dynamic user-generated input (e.g., To-Do task content), enforced sanitization.
+
+## Example Fix
+
+```blade
+<!-- Safe -->
+<p>{{ $todo->task }}</p>
+
