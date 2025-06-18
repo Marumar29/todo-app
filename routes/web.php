@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\CustomRegisterController;
+use App\Http\Controllers\Auth\CustomLoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +28,6 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::post('/custom-register', [CustomRegisterController::class, 'register']);
+Route::post('/custom-login', [CustomLoginController::class, 'login']);
